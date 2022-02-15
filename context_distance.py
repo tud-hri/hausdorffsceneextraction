@@ -7,10 +7,10 @@ import pandas as pd
 import tqdm
 from scipy.spatial.distance import directed_hausdorff
 
-from dataobjects import DatasetRelative
-from encryptiontools import load_encrypted_pickle, save_encrypted_pickle
-from variability.lane import Lane
-from variability.progressprocess import ProgressProcess
+from .dataset_relative import DatasetRelative
+from processing.encryptiontools import load_encrypted_pickle, save_encrypted_pickle
+from .lane import Lane
+from .progressprocess import ProgressProcess
 
 
 def get_context_set(dataset: DatasetRelative, vehicle_id, frame_number):
