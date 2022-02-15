@@ -58,7 +58,7 @@ class DatasetRelative:
         dataset.upper_lane_markings = [float(value) for value in recording_meta_data.at[0, 'upperLaneMarkings'].split(';')]
         dataset.lower_lane_markings = [float(value) for value in recording_meta_data.at[0, 'lowerLaneMarkings'].split(';')]
 
-        track_meta_data = pd.read_csv(path_to_data_folder + '%02d_tracksMeta.csv' % dataset_index)
+        track_meta_data = pd.read_csv(os.path.join(path_to_data_folder, '%02d_tracksMeta.csv' % dataset_index))
         dataset.track_meta_data = track_meta_data.astype({"id": int,
                                                           "width": float,
                                                           "height": float,
@@ -77,7 +77,7 @@ class DatasetRelative:
                                                           "numLaneChanges": int})
         dataset.track_meta_data = dataset.track_meta_data.set_index('id')
 
-        track_data = pd.read_csv(path_to_data_folder + '%02d_tracks.csv' % dataset_index)
+        track_data = pd.read_csv(os.path.join(path_to_data_folder, '%02d_tracks.csv' % dataset_index))
         dataset.track_data = track_data.astype({"frame": int,
                                                 "id": int,
                                                 "x": float,
