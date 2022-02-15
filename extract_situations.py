@@ -231,6 +231,7 @@ def post_process(all_results, tag, path_to_data_folder, n=100, generate_situatio
     print(best)
 
     if report_number_of_vehicles_in_sets:
+        print('calculating number of vehicles for every found context set')
         print_set_size_table(best, path_to_data_folder)
 
     if plot_context_sets:
@@ -273,7 +274,7 @@ if __name__ == '__main__':
     example_dataset_id = 1
     example_ego_id = 21
     example_frame = 379
-    datasets_to_search = [1, 2]
+    datasets_to_search = range(1, 61)
 
     path_to_context_data = os.path.join('..', 'data', 'HighD', 'context_distances')
     path_to_data_folder = os.path.join('..', 'data', 'HighD', 'data')
