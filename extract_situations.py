@@ -104,7 +104,7 @@ def get_selected_context(selected_dataset_id, selected_ego_id, selected_frame, p
 
     if data is None:  # pickle file was not present
         data = DatasetRelative.from_csv_files(selected_dataset_id, path_to_data_folder=path_to_data_folder)
-        save_encrypted_pickle(os.path.join(path_to_data_folder, '/%02d_relative.pkl' % selected_dataset_id), data)
+        save_encrypted_pickle(os.path.join(path_to_data_folder, '%02d_relative.pkl' % selected_dataset_id), data)
 
     selected_context_set = get_context_set(data, selected_ego_id, selected_frame)
 
@@ -190,8 +190,6 @@ def post_process(all_results, tag, path_to_data_folder, n=100, generate_situatio
 
     if plot_context_sets:
         plot_heatmap_of_context_sets(best, example_dataset, example_ego_id, example_frame, path_to_data_folder)
-
-    os.chdir(os.getcwd() + '\\..')
 
     if generate_situation_images:
         from processing.imagegenerator import generate_images
