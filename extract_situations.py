@@ -149,7 +149,7 @@ def sort_and_return_best(all_results, n=100):
     return best
 
 
-def get_all_output_data(path_to_context_data, example_dataset_id, example_ego_id, example_frame, datasets_to_search):
+def get_all_output_data(path_to_context_data, path_to_data, example_dataset_id, example_ego_id, example_frame, datasets_to_search):
     tag = 'd%d_a%d_f%d' % (example_dataset_id, example_ego_id, example_frame)
 
     if not os.path.isfile(os.path.join(path_to_context_data, 'context_distance_wrt_' + tag + '.pkl')):
@@ -234,7 +234,7 @@ if __name__ == '__main__':
     if not os.path.isdir(path_to_context_data):
         os.makedirs(path_to_context_data, exist_ok=True)
 
-    all_results, tag = get_all_output_data(path_to_context_data, example_dataset_id, example_ego_id, example_frame, datasets_to_search)
+    all_results, tag = get_all_output_data(path_to_context_data, path_to_data_folder, example_dataset_id, example_ego_id, example_frame, datasets_to_search)
 
     post_process(all_results, tag=tag, n=250, path_to_data_folder=path_to_data_folder, generate_situation_images=False, generate_distribution_plots=True,
                  plot_context_sets=True, report_number_of_vehicles_in_sets=False)
