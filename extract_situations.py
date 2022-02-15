@@ -14,6 +14,9 @@ from hausdorffscenarioextraction.plotting import *
 
 
 def get_context_set(dataset: DatasetRelative, vehicle_id, frame_number):
+    """
+    Converts the surrounding traffic of the eggo vehicle denoted by vehicle_id at frame_number to a set of points. In the paper this is called the context set.
+    """
     data_row = dataset.track_data.loc[(dataset.track_data['id'] == vehicle_id) &
                                       (dataset.track_data['frame'] == frame_number), :].iloc[0, :]
 
@@ -45,6 +48,11 @@ def calculate_distance_between_contexts(u, v, size_penalty_factor=0):
 
 
 def get_lane_number_mapping(number_of_lane_markings):
+    """
+    Helper function used to convert the lane number (see highd-dataset.com for more info) to a lane name. This is needed because different dataset in de highD
+    data have different number of lanes.
+    """
+
     if number_of_lane_markings == 9:
         lane_number_mapping = {Lane.LEFT: [5, 7],
                                Lane.CENTER: [4, 8],
@@ -64,7 +72,21 @@ def get_lane_number_mapping(number_of_lane_markings):
 
 
 def get_context_differences_for_one_dataset(dataset_id, selected_context_set, selected_vehicle_lane, selected_dataset_id, selected_ego_id, selected_frame,
-                                            y_scale_factor, progress_queue, path_to_data_folder):
+                                            lambda_factor, progress_queue, path_to_data_folder):
+    """
+    Calculates, saves and returns the distances of all ego vehicle/frame combinations present in a single dataset to a selected example.
+
+    :param dataset_id: The ide of the targeted dataset
+    :param selected_context_set: the context set of the selected example
+    :param selected_vehicle_lane: lane of the selected example (only vehicles in the same lane will be considered)
+    :param selected_dataset_id: dataset id of the selected example
+    :param selected_ego_id: vehicle id of the selected example
+    :param selected_frame: frame id of the selected example
+    :param lambda_factor: the parameter lambda, used to increase the weight of lateral deviations
+    :param progress_queue: a queue object to write the progress to, used to display total progress to the user while running in parallel processes
+    :param path_to_data_folder: path to the folder that contains highD data
+    :return:
+    """
     data = load_encrypted_pickle(os.path.join(path_to_data_folder, '%02d_relative.pkl' % dataset_id))
 
     all_regarded_contexts = []
@@ -84,8 +106,8 @@ def get_context_differences_for_one_dataset(dataset_id, selected_context_set, se
         if not (dataset_id == selected_dataset_id and selected_ego_id == other_id):
             other_context_set = get_context_set(data, other_id, other_frame)
             if other_context_set.any():
-                distance = calculate_distance_between_contexts(selected_context_set * np.array([1, y_scale_factor, 1, y_scale_factor]),
-                                                               other_context_set * np.array([1, y_scale_factor, 1, y_scale_factor]))
+                distance = calculate_distance_between_contexts(selected_context_set * np.array([1, lambda_factor, 1, lambda_factor]),
+                                                               other_context_set * np.array([1, lambda_factor, 1, lambda_factor]))
 
                 all_regarded_contexts.append({'dataset_id': dataset_id,
                                               'vehicle_id': other_id,
@@ -100,6 +122,9 @@ def get_context_differences_for_one_dataset(dataset_id, selected_context_set, se
 
 
 def get_selected_context(selected_dataset_id, selected_ego_id, selected_frame, path_to_data_folder):
+    """
+    returns the context set of the selected example
+    """
     data = load_encrypted_pickle(os.path.join(path_to_data_folder, '%02d_relative.pkl' % selected_dataset_id))
 
     if data is None:  # pickle file was not present
@@ -121,6 +146,18 @@ def get_selected_context(selected_dataset_id, selected_ego_id, selected_frame, p
 
 
 def run_multiprocessing(dataset_ids, selected_context_set, selected_vehicle_lane, selected_dataset_id, selected_ego_id, selected_frame, workers=8):
+    """
+    Uses multiprocessing to calculate distances to the selected example in parallel. Each dataset is assigned to a worker process.
+
+    :param dataset_ids: all datasets to consider
+    :param selected_context_set: the context set of the selected example
+    :param selected_vehicle_lane: lane of the selected example (only vehicles in the same lane will be considered)
+    :param selected_dataset_id: dataset id of the selected example
+    :param selected_ego_id: vehicle id of the selected example
+    :param selected_frame: frame id of the selected example
+    :param workers: number of workers to use
+    :return:
+    """
     number_of_sets = len(dataset_ids)
     manager = mp.Manager()
     progress_process = ProgressProcess(number_of_sets, manager)
@@ -153,6 +190,7 @@ def get_all_output_data(path_to_context_data, path_to_data, example_dataset_id, 
     tag = 'd%d_a%d_f%d' % (example_dataset_id, example_ego_id, example_frame)
 
     if not os.path.isfile(os.path.join(path_to_context_data, 'context_distance_wrt_' + tag + '.pkl')):
+        print('No saved data for tag %s found, all distances will be calculated now' % tag)
         calculate_and_save_context_distances(example_dataset_id, example_ego_id, example_frame, datasets_to_search, path_to_context_data, path_to_data)
 
     all_results_as_dataframe = load_encrypted_pickle(os.path.join(path_to_context_data, 'context_distance_wrt_' + tag + '.pkl'))
@@ -161,6 +199,9 @@ def get_all_output_data(path_to_context_data, path_to_data, example_dataset_id, 
 
 
 def print_set_size_table(best_results, path_to_data_folder):
+    """
+    reports statistics on the sizes of found context sets
+    """
     set_sizes = []
 
     for result_index in tqdm.tqdm(best_results.index):
@@ -176,6 +217,9 @@ def print_set_size_table(best_results, path_to_data_folder):
 
 def post_process(all_results, tag, path_to_data_folder, n=100, generate_situation_images=True, generate_distribution_plots=True, plot_context_sets=True,
                  report_number_of_vehicles_in_sets=True):
+    """
+    generates plots and or prints statistics
+    """
     tag_as_list = tag.split('_')
     example_dataset = int(tag_as_list[0].replace('d', ''))
     example_ego_id = int(tag_as_list[1].replace('a', ''))
@@ -183,16 +227,20 @@ def post_process(all_results, tag, path_to_data_folder, n=100, generate_situatio
 
     best = sort_and_return_best(all_results, n=n)
 
+    print('A summary of the found results: ')
     print(best)
 
     if report_number_of_vehicles_in_sets:
         print_set_size_table(best, path_to_data_folder)
 
     if plot_context_sets:
-        plot_heatmap_of_context_sets(best, example_dataset, example_ego_id, example_frame, path_to_data_folder)
+        print('generating scatter plot of found context sets')
+        plot_spread_of_context_sets(best, example_dataset, example_ego_id, example_frame, path_to_data_folder)
 
     if generate_situation_images:
         from processing.imagegenerator import generate_images
+
+        print('generating screenshots of results')
 
         generate_images(example_dataset, [example_frame], ego_ids=[example_ego_id], file_names=['d1-a%d-f%d' % (example_ego_id, example_frame)], folder=tag)
 
@@ -208,7 +256,8 @@ def post_process(all_results, tag, path_to_data_folder, n=100, generate_situatio
             generate_images(dataset_id, frame_ids=frame_numbers, ego_ids=vehicle_ids, file_names=file_names, folder=tag)
 
     if generate_distribution_plots:
-        get_distribution_plots(best, time_stamps=[0, 1, 2, 3], path_to_data_folder=path_to_data_folder)
+        print('generating plot of variability in responses')
+        plot_variability_in_responses(best, time_stamps=[0, 1, 2, 3], path_to_data_folder=path_to_data_folder)
 
 
 def calculate_and_save_context_distances(example_dataset_id, example_ego_id, example_frame, datasets_to_search, path_to_context_data, path_to_data):

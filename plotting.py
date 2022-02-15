@@ -10,7 +10,7 @@ from hausdorffscenarioextraction.extract_situations import get_context_set
 from processing.encryptiontools import save_encrypted_pickle, load_encrypted_pickle
 
 
-def load_dataset(dataset_id, path_to_data_folder):
+def _load_dataset(dataset_id, path_to_data_folder):
     data = load_encrypted_pickle(os.path.join(path_to_data_folder, '%02d_relative.pkl' % dataset_id))
     if data is None:  # pickle file was not present
         data = DatasetRelative.from_csv_files(dataset_id, path_to_data_folder=path_to_data_folder)
@@ -19,9 +19,12 @@ def load_dataset(dataset_id, path_to_data_folder):
     return data
 
 
-def plot_heatmap_of_context_sets(best_results, example_dataset_id, example_ego_id, example_frame, path_to_data_folder):
+def plot_spread_of_context_sets(best_results, example_dataset_id, example_ego_id, example_frame, path_to_data_folder):
+    """
+    generates a scatter plot of the found context sets.
+    """
 
-    data = load_dataset(example_dataset_id, path_to_data_folder)
+    data = _load_dataset(example_dataset_id, path_to_data_folder)
 
     example_context_set = get_context_set(data, example_ego_id, example_frame)
 
@@ -31,7 +34,7 @@ def plot_heatmap_of_context_sets(best_results, example_dataset_id, example_ego_i
         all_context_sets = []
 
         for dataset_id in tqdm.tqdm(best_results['dataset_id'].unique()):
-            data = load_dataset(dataset_id, path_to_data_folder)
+            data = _load_dataset(dataset_id, path_to_data_folder)
 
             for index in best_results.loc[best_results['dataset_id'] == dataset_id, :].index:
                 vehicle_id = best_results.at[index, 'vehicle_id']
@@ -65,7 +68,11 @@ def plot_heatmap_of_context_sets(best_results, example_dataset_id, example_ego_i
     plt.ylabel('y-velocity [m/s]')
 
 
-def get_distribution_plots(best_results, time_stamps, path_to_data_folder):
+def plot_variability_in_responses(best_results, time_stamps, path_to_data_folder):
+    """
+    generates plot of the responses of human drivers to the selected scenarios
+    """
+
     all_positions_after_n_seconds = {'Longitudinal position [m]': [],
                                      'Lateral position [m]': [],
                                      'time [s]': [],
@@ -79,7 +86,7 @@ def get_distribution_plots(best_results, time_stamps, path_to_data_folder):
             initial_frame = best_results.at[index, 'frame_number']
 
             for n in time_stamps:
-                relative_position = get_position_after_n_seconds(data, vehicle_id, initial_frame, n)
+                relative_position = _get_position_after_n_seconds(data, vehicle_id, initial_frame, n)
                 if relative_position is not None:
                     all_positions_after_n_seconds['Longitudinal position [m]'].append(relative_position[0])
                     all_positions_after_n_seconds['Lateral position [m]'].append(relative_position[1])
@@ -98,7 +105,7 @@ def get_distribution_plots(best_results, time_stamps, path_to_data_folder):
     plt.show()
 
 
-def get_position_after_n_seconds(data, vehicle_id, initial_frame, n):
+def _get_position_after_n_seconds(data, vehicle_id, initial_frame, n):
     fps = data.frame_rate
 
     driving_direction = data.track_meta_data.at[vehicle_id, 'drivingDirection']
