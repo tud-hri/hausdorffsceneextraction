@@ -153,7 +153,7 @@ def get_all_output_data(path_to_context_data, example_dataset_id, example_ego_id
     tag = 'd%d_a%d_f%d' % (example_dataset_id, example_ego_id, example_frame)
 
     if not os.path.isfile(os.path.join(path_to_context_data, 'context_distance_wrt_' + tag + '.pkl')):
-        calculate_and_save_context_distances(example_dataset_id, example_ego_id, example_frame, datasets_to_search, path_to_context_data)
+        calculate_and_save_context_distances(example_dataset_id, example_ego_id, example_frame, datasets_to_search, path_to_context_data, path_to_data)
 
     all_results_as_dataframe = load_encrypted_pickle(os.path.join(path_to_context_data, 'context_distance_wrt_' + tag + '.pkl'))
 
@@ -189,7 +189,7 @@ def post_process(all_results, tag, path_to_data_folder, n=100, generate_situatio
         print_set_size_table(best, path_to_data_folder)
 
     if plot_context_sets:
-        plot_heatmap_of_context_sets(best, example_dataset, example_ego_id, example_frame)
+        plot_heatmap_of_context_sets(best, example_dataset, example_ego_id, example_frame, path_to_data_folder)
 
     os.chdir(os.getcwd() + '\\..')
 
@@ -213,13 +213,13 @@ def post_process(all_results, tag, path_to_data_folder, n=100, generate_situatio
         get_distribution_plots(best, time_stamps=[0, 1, 2, 3], path_to_data_folder=path_to_data_folder)
 
 
-def calculate_and_save_context_distances(example_dataset_id, example_ego_id, example_frame, datasets_to_search, path_to_data):
+def calculate_and_save_context_distances(example_dataset_id, example_ego_id, example_frame, datasets_to_search, path_to_context_data, path_to_data):
 
     example_context_set, example_vehicle_lane = get_selected_context(example_dataset_id, example_ego_id, example_frame, path_to_data)
     all_results = run_multiprocessing(datasets_to_search, example_context_set, example_vehicle_lane, example_dataset_id, example_ego_id, example_frame)
 
     tag = 'd%d_a%d_f%d' % (example_dataset_id, example_ego_id, example_frame)
-    save_encrypted_pickle(os.path.join(path_to_data, 'context_distance_wrt_' + tag + '.pkl'), all_results)
+    save_encrypted_pickle(os.path.join(path_to_context_data, 'context_distance_wrt_' + tag + '.pkl'), all_results)
 
 
 if __name__ == '__main__':

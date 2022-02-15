@@ -37,7 +37,7 @@ class DatasetRelative:
         dataset = DatasetRelative()
 
         try:
-            recording_meta_data = pd.read_csv(path_to_data_folder + '%02d_recordingMeta.csv' % dataset_index)
+            recording_meta_data = pd.read_csv(os.path.join(path_to_data_folder, '%02d_recordingMeta.csv' % dataset_index))
         except FileNotFoundError:
             raise ValueError('The dataset with index %d could not be loaded because the data is missing.' % dataset_index)
 
