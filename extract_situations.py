@@ -219,6 +219,17 @@ def post_process(all_results, tag, path_to_data_folder, n=100, generate_situatio
                  report_number_of_vehicles_in_sets=True):
     """
     generates plots and or prints statistics
+
+    :param all_results: the results of the Hausdorff method
+    :param tag: the tag string defining the selected example
+    :param path_to_data_folder: points to the place where highD data is stored
+    :param n: number of situations to be selected
+    :param generate_situation_images: If True, TraViA will generate images for every found context set depicting the situation. These are saved in the data
+    folder
+    :param generate_distribution_plots: if True, a plot is generated showing the distribution of the responses
+    :param plot_context_sets: if True, a plot is generated showing the spread in the found context sets
+    :param report_number_of_vehicles_in_sets: if True, the number of vehicles per found context set is calculated and reported
+    :return:
     """
     tag_as_list = tag.split('_')
     example_dataset = int(tag_as_list[0].replace('d', ''))
