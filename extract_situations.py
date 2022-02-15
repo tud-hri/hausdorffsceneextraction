@@ -99,7 +99,7 @@ def get_context_differences_for_one_dataset(dataset_id, selected_context_set, se
     return all_regarded_contexts
 
 
-def get_selected_context(selected_dataset_id, selected_ego_id, selected_frame, path_to_data_folder='../data/'):
+def get_selected_context(selected_dataset_id, selected_ego_id, selected_frame, path_to_data_folder):
     data = load_encrypted_pickle(os.path.join(path_to_data_folder, '%02d_relative.pkl' % selected_dataset_id))
 
     if data is None:  # pickle file was not present
@@ -160,12 +160,12 @@ def get_all_output_data(path_to_context_data, example_dataset_id, example_ego_id
     return all_results_as_dataframe, tag
 
 
-def print_set_size_table(best_results):
+def print_set_size_table(best_results, path_to_data_folder):
     set_sizes = []
 
     for result_index in tqdm.tqdm(best_results.index):
         selected_dataset_id, selected_ego_id, selected_frame = best_results.loc[result_index, ['dataset_id', 'vehicle_id', 'frame_number']]
-        context_set, _ = get_selected_context(selected_dataset_id, selected_ego_id, selected_frame)
+        context_set, _ = get_selected_context(selected_dataset_id, selected_ego_id, selected_frame, path_to_data_folder)
         set_sizes += [len(context_set)]
 
     set_sizes = np.array(set_sizes)
@@ -186,7 +186,7 @@ def post_process(all_results, tag, path_to_data_folder, n=100, generate_situatio
     print(best)
 
     if report_number_of_vehicles_in_sets:
-        print_set_size_table(best)
+        print_set_size_table(best, path_to_data_folder)
 
     if plot_context_sets:
         plot_heatmap_of_context_sets(best, example_dataset, example_ego_id, example_frame)
@@ -215,7 +215,7 @@ def post_process(all_results, tag, path_to_data_folder, n=100, generate_situatio
 
 def calculate_and_save_context_distances(example_dataset_id, example_ego_id, example_frame, datasets_to_search, path_to_data):
 
-    example_context_set, example_vehicle_lane = get_selected_context(example_dataset_id, example_ego_id, example_frame)
+    example_context_set, example_vehicle_lane = get_selected_context(example_dataset_id, example_ego_id, example_frame, path_to_data)
     all_results = run_multiprocessing(datasets_to_search, example_context_set, example_vehicle_lane, example_dataset_id, example_ego_id, example_frame)
 
     tag = 'd%d_a%d_f%d' % (example_dataset_id, example_ego_id, example_frame)

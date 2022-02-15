@@ -33,7 +33,7 @@ class DatasetRelative:
         self.track_data = pd.DataFrame()
 
     @staticmethod
-    def from_csv_files(dataset_index: int, path_to_data_folder='data/'):
+    def from_csv_files(dataset_index: int, path_to_data_folder):
         dataset = DatasetRelative()
 
         try:
