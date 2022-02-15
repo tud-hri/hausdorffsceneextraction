@@ -215,14 +215,15 @@ def print_set_size_table(best_results, path_to_data_folder):
         print(str(sum(set_sizes == set_size)) + ' of the selected sets have a set size of ' + str(set_size))
 
 
-def post_process(all_results, tag, path_to_data_folder, n=100, generate_situation_images=True, generate_distribution_plots=True, plot_context_sets=True,
-                 report_number_of_vehicles_in_sets=True):
+def post_process(all_results, tag, path_to_data_folder, path_to_context_data, n=100, generate_situation_images=True, generate_distribution_plots=True,
+                 plot_context_sets=True, report_number_of_vehicles_in_sets=True):
     """
     generates plots and or prints statistics
 
     :param all_results: the results of the Hausdorff method
     :param tag: the tag string defining the selected example
     :param path_to_data_folder: points to the place where highD data is stored
+    :param path_to_context_data: points to the place where context data is stored
     :param n: number of situations to be selected
     :param generate_situation_images: If True, TraViA will generate images for every found context set depicting the situation. These are saved in the data
     folder
@@ -250,11 +251,12 @@ def post_process(all_results, tag, path_to_data_folder, n=100, generate_situatio
         plot_spread_of_context_sets(best, example_dataset, example_ego_id, example_frame, path_to_data_folder)
 
     if generate_situation_images:
-        from processing.imagegenerator import generate_images
+        from hausdorffscenarioextraction.imagegenerator import generate_images
 
         print('generating screenshots of results')
 
-        generate_images(example_dataset, [example_frame], ego_ids=[example_ego_id], file_names=['d1-a%d-f%d' % (example_ego_id, example_frame)], folder=tag)
+        generate_images(example_dataset, [example_frame], path_to_data_folder, path_to_context_data, tag, ego_ids=[example_ego_id],
+                        file_names=['d1-a%d-f%d' % (example_ego_id, example_frame)])
 
         for dataset_id in tqdm.tqdm(best['dataset_id'].unique()):
             frame_numbers = best.loc[best['dataset_id'] == dataset_id, 'frame_number'].to_list()
@@ -265,7 +267,7 @@ def post_process(all_results, tag, path_to_data_folder, n=100, generate_situatio
             for frame, vehicle, rank in zip(frame_numbers, vehicle_ids, ranks):
                 file_names += ['%03d-d%d-a%d-f%d' % (rank + 1, dataset_id, vehicle, frame)]
 
-            generate_images(dataset_id, frame_ids=frame_numbers, ego_ids=vehicle_ids, file_names=file_names, folder=tag)
+            generate_images(dataset_id, frame_numbers, path_to_data_folder, path_to_context_data, tag, ego_ids=vehicle_ids, file_names=file_names)
 
     if generate_distribution_plots:
         print('generating plot of variability in responses')
@@ -295,5 +297,5 @@ if __name__ == '__main__':
 
     all_results, tag = get_all_output_data(path_to_context_data, path_to_data_folder, example_dataset_id, example_ego_id, example_frame, datasets_to_search)
 
-    post_process(all_results, tag=tag, n=250, path_to_data_folder=path_to_data_folder, generate_situation_images=False, generate_distribution_plots=True,
-                 plot_context_sets=True, report_number_of_vehicles_in_sets=False)
+    post_process(all_results, tag=tag, n=250, path_to_data_folder=path_to_data_folder, path_to_context_data=path_to_context_data,
+                 generate_situation_images=False, generate_distribution_plots=True, plot_context_sets=True, report_number_of_vehicles_in_sets=False)
