@@ -22,8 +22,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 
-from hausdorffscenarioextraction.dataset_relative import DatasetRelative
-from hausdorffscenarioextraction.extract_situations import get_context_set
+from hausdorffsceneextraction.dataset_relative import DatasetRelative
+from hausdorffsceneextraction.extract_situations import get_context_set
 from processing.encryptiontools import save_encrypted_pickle, load_encrypted_pickle
 
 
@@ -61,7 +61,7 @@ def plot_spread_of_context_sets(best_results, example_dataset_id, example_ego_id
     f, ax = plt.subplots(2, figsize=(6, 6))
     ax[0].set_aspect(2)
     plt.sca(ax[0])
-    sns.scatterplot(x=all_context_sets[:, 0], y=-all_context_sets[:, 1], s=10., label='Selected scenarios')
+    sns.scatterplot(x=all_context_sets[:, 0], y=-all_context_sets[:, 1], s=10., label='Selected scenes')
     sns.scatterplot(x=example_context_set[:, 0], y=-example_context_set[:, 1], marker='*', s=150., label='Example')
     plt.plot([0.0], [0.0], color='tab:green', marker='o', linestyle='none', label='Ego position')
 
@@ -72,7 +72,7 @@ def plot_spread_of_context_sets(best_results, example_dataset_id, example_ego_id
 
     plt.sca(ax[1])
     ax[1].set_aspect(2)
-    sns.scatterplot(x=all_context_sets[:, 2], y=-all_context_sets[:, 3], s=10., label='Selected scenarios')
+    sns.scatterplot(x=all_context_sets[:, 2], y=-all_context_sets[:, 3], s=10., label='Selected scenes')
     sns.scatterplot(x=example_context_set[:, 2], y=-example_context_set[:, 3], marker='*', s=150., label='Example')
 
     plt.legend()
@@ -83,7 +83,7 @@ def plot_spread_of_context_sets(best_results, example_dataset_id, example_ego_id
 
 def plot_variability_in_responses(best_results, time_stamps, path_to_data_folder):
     """
-    generates plot of the responses of human drivers to the selected scenarios
+    generates plot of the responses of human drivers to the selected scenes
     """
 
     all_positions_after_n_seconds = {'Longitudinal position [m]': [],

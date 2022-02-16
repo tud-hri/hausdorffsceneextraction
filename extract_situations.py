@@ -20,9 +20,9 @@ import multiprocessing as mp
 import pandas as pd
 from scipy.spatial.distance import directed_hausdorff
 
-from hausdorffscenarioextraction.lane import Lane
-from hausdorffscenarioextraction.progressprocess import ProgressProcess
-from hausdorffscenarioextraction.plotting import *
+from hausdorffsceneextraction.lane import Lane
+from hausdorffsceneextraction.progressprocess import ProgressProcess
+from hausdorffsceneextraction.plotting import *
 
 
 def get_context_set(dataset: DatasetRelative, vehicle_id, frame_number):
@@ -263,7 +263,7 @@ def post_process(all_results, tag, path_to_data_folder, path_to_context_data, n=
         plot_spread_of_context_sets(best, example_dataset, example_ego_id, example_frame, path_to_data_folder)
 
     if generate_situation_images:
-        from hausdorffscenarioextraction.imagegenerator import generate_images
+        from hausdorffsceneextraction.imagegenerator import generate_images
 
         print('generating screenshots of results')
 

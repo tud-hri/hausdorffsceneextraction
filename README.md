@@ -1,6 +1,6 @@
-# Automatic scenario extraction based on the Hausdorff distance
-This python module contains scripts needed to automatically extract similar scenarios from naturalistic traffic datasets. This code accompanies the paper 
-"Automatic extraction of similar traffic scenarios from large naturalistic datasets using the Hausdorff distance - Siebinga, Zgonnikov & Abbink 2022". 
+# Automatic scene extraction based on the Hausdorff distance
+This python module contains scripts needed to automatically extract similar scenes from naturalistic traffic datasets. This code accompanies the paper 
+"Automatic extraction of similar traffic scenes from large naturalistic datasets using the Hausdorff distance - Siebinga, Zgonnikov & Abbink 2022". 
 
 ## Installation instructions
 This module cannot be used on its own, its should be used as a sub-module of the TraViA visualization software (click 
@@ -16,7 +16,7 @@ After cloning TraViA, you can navigate to the travia folder (`cd travia`) and cl
 github version, or create a fork first and then clone your own fork.
 
 ```
-git submodule add https://github.com/tud-hri/hausdorffscenarioextraction.git
+git submodule add https://github.com/tud-hri/hausdorffsceneextraction.git
 ```
 
 This submodule has some additional dependencies besides the dependencies of TraViA itself. Please make sure to install all dependencies by running the 
@@ -24,7 +24,7 @@ commands below.
 
 ```
 pip install -r requirements.txt
-cd hausdorffscenarioextraction
+cd hausdorffsceneextraction
 pip install -r requirements.txt
 ```
 
