@@ -32,7 +32,7 @@ Instruction on how to get the data and how to work with TraViA can be found in t
 sub-module.
 
 ## How to use
-Run the script `extract_situations.py` to find situations with similar traffic context to a specific scenario. First select an example of the situation you 
+Run the script `extract_scenes.py` to find situations with similar traffic context to a specific scenario. First select an example of the situation you 
 are interested in. You can do this using TraViA itself. Now use the selected dataset id, vehicle id, and frame number in the `main` block of 
-`extract_situations.py`. You can use the parameter `datasets_to_search` to exclude part of the highD dataset and speed things up. Finally you can alter the 
+`extract_scenes.py`. You can use the parameter `datasets_to_search` to exclude part of the highD dataset and speed things up. Finally, you can alter the 
 arguments in the function `post_process` to determine which plots to generate.  
