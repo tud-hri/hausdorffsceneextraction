@@ -13,10 +13,19 @@ git clone https://github.com/tud-hri/travia.git
 ```
 
 After cloning TraViA, you can navigate to the travia folder (`cd travia`) and clone this repository as a submodule. Use the following command to clone the 
-girhub version, or create a fork first and then clone your own fork.
+github version, or create a fork first and then clone your own fork.
 
 ```
 git submodule add https://github.com/tud-hri/hausdorffscenarioextraction.git
+```
+
+This submodule has some additional dependencies besides the dependencies of TraViA itself. Please make sure to install all dependencies by running the 
+commands below. 
+
+```
+pip install -r requirements.txt
+cd hausdorffscenarioextraction
+pip install -r requirements.txt
 ```
 
 Instruction on how to get the data and how to work with TraViA can be found in the TraViA README file. See the instructions below for how to work with this 
