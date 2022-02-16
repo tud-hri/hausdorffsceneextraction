@@ -28,22 +28,18 @@ def plot_spread_of_context_sets(best_results, example_dataset_id, example_ego_id
 
     example_context_set = get_context_set(data, example_ego_id, example_frame)
 
-    all_context_sets = load_encrypted_pickle('all_context_sets.pkl')
+    all_context_sets = []
 
-    if all_context_sets is None:
-        all_context_sets = []
+    for dataset_id in tqdm.tqdm(best_results['dataset_id'].unique()):
+        data = _load_dataset(dataset_id, path_to_data_folder)
 
-        for dataset_id in tqdm.tqdm(best_results['dataset_id'].unique()):
-            data = _load_dataset(dataset_id, path_to_data_folder)
+        for index in best_results.loc[best_results['dataset_id'] == dataset_id, :].index:
+            vehicle_id = best_results.at[index, 'vehicle_id']
+            initial_frame = best_results.at[index, 'frame_number']
+            context_set = get_context_set(data, vehicle_id, initial_frame)
+            all_context_sets += [context_set]
 
-            for index in best_results.loc[best_results['dataset_id'] == dataset_id, :].index:
-                vehicle_id = best_results.at[index, 'vehicle_id']
-                initial_frame = best_results.at[index, 'frame_number']
-                context_set = get_context_set(data, vehicle_id, initial_frame)
-                all_context_sets += [context_set]
-
-        all_context_sets = np.concatenate(all_context_sets)
-        save_encrypted_pickle('all_context_sets.pkl', all_context_sets)
+    all_context_sets = np.concatenate(all_context_sets)
 
     f, ax = plt.subplots(2, figsize=(6, 6))
     ax[0].set_aspect(2)
@@ -79,7 +75,7 @@ def plot_variability_in_responses(best_results, time_stamps, path_to_data_folder
                                      'vehicle id': []}
 
     for dataset_id in tqdm.tqdm(best_results['dataset_id'].unique()):
-        data = load_encrypted_pickle(os.path.join(path_to_data_folder, '%02d.pkl' % dataset_id))
+        data = load_encrypted_pickle(os.path.join(path_to_data_folder, '%02d_relative.pkl' % dataset_id))
 
         for index in best_results.loc[best_results['dataset_id'] == dataset_id, :].index:
             vehicle_id = best_results.at[index, 'vehicle_id']

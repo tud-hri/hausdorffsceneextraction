@@ -1,13 +1,8 @@
 import multiprocessing as mp
-import os
 
-import numpy as np
 import pandas as pd
-import tqdm
 from scipy.spatial.distance import directed_hausdorff
 
-from hausdorffscenarioextraction.dataset_relative import DatasetRelative
-from processing.encryptiontools import load_encrypted_pickle, save_encrypted_pickle
 from hausdorffscenarioextraction.lane import Lane
 from hausdorffscenarioextraction.progressprocess import ProgressProcess
 from hausdorffscenarioextraction.plotting import *

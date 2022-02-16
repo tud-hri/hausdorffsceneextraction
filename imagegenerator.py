@@ -6,7 +6,7 @@ from processing.encryptiontools import load_encrypted_pickle, save_encrypted_pic
 from dataobjects.dataset import Dataset
 from PyQt5 import QtWidgets, QtCore
 from gui import TrafficVisualizerGui
-from gui import SimMaster
+from visualisation import HighDVisualisationMaster
 
 
 def generate_images(dataset_index, frame_ids, path_to_data_folder, path_to_context_data, tag, ego_ids=None, file_names=None):
@@ -30,9 +30,23 @@ def generate_images(dataset_index, frame_ids, path_to_data_folder, path_to_conte
         data = Dataset.from_csv_files(dataset_index)
         save_encrypted_pickle(os.path.join(path_to_data_folder, '%02d.pkl' % dataset_index), data)
 
+    old_wd = os.getcwd()
+    new_wd = os.getcwd()
+
+    while os.path.split(new_wd)[1] != 'travia':
+        new_wd, _ = os.path.split(new_wd)
+
+    os.chdir(new_wd)
     gui = TrafficVisualizerGui(data)
-    sim = SimMaster(data, gui)
-    gui.register_sim_master(sim)
+    start_time = data.start_time
+    end_time = start_time + datetime.timedelta(milliseconds=int(data.duration * 1000))
+    first_frame = data.track_data['frame'].min()
+    number_of_frames = data.track_data['frame'].max() - first_frame
+    dt = datetime.timedelta(seconds=1 / data.frame_rate)
+    sim = HighDVisualisationMaster(data, gui, start_time, end_time, number_of_frames, first_frame, dt)
+    gui.register_visualisation_master(sim)
+
+    os.chdir(old_wd)
 
     export_timer = QtCore.QTimer()
     export_timer.setInterval(0)
@@ -53,11 +67,12 @@ def _save_images_and_close(frame_ids, ego_ids, gui, file_names, folder, tag):
         ego_ids = [None] * len(frame_ids)
 
     for index, frame_number in enumerate(frame_ids):
-        gui.set_frame_number(frame_number)
+        gui.visualisation_master.frame_number = frame_number
+        gui.visualisation_master.do_time_step()
 
         if ego_ids[index]:
-            if not (gui.selected_car and gui.selected_car.id == ego_ids[index]):
-                gui.select_car(gui.cars[str(ego_ids[index])])
+            if not (gui.selected_vehicle and gui.selected_vehicle.id == ego_ids[index]):
+                gui.select_vehicle(gui.vehicles[str(ego_ids[index])])
 
         file_name = file_names[index]
         if not file_name:
