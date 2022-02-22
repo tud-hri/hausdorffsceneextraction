@@ -27,7 +27,7 @@ from hausdorffsceneextraction.plotting import *
 
 def get_context_set(dataset: DatasetRelative, vehicle_id, frame_number):
     """
-    Converts the surrounding traffic of the eggo vehicle denoted by vehicle_id at frame_number to a set of points. In the paper this is called the context set.
+    Converts the surrounding traffic of the ego vehicle denoted by vehicle_id at frame_number to a set of points. In the paper this is called the context set.
     """
     data_row = dataset.track_data.loc[(dataset.track_data['id'] == vehicle_id) &
                                       (dataset.track_data['frame'] == frame_number), :].iloc[0, :]
@@ -49,7 +49,9 @@ def get_context_set(dataset: DatasetRelative, vehicle_id, frame_number):
 
     # convert velocities to vehicle frame (assuming 0 or pi fixed yaw for vehicles)
     if driving_direction == 1:
-        context_set *= np.array([1., 1., -1., -1.])
+        context_set *= np.array([1., 1., -1., 1.])
+    else:
+        context_set *= np.array([1., 1., 1., -1.])
 
     return context_set
 

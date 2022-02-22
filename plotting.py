@@ -72,8 +72,8 @@ def plot_spread_of_context_sets(best_results, example_dataset_id, example_ego_id
 
     plt.sca(ax[1])
     ax[1].set_aspect(2)
-    sns.scatterplot(x=all_context_sets[:, 2], y=-all_context_sets[:, 3], s=10., label='Selected scenes')
-    sns.scatterplot(x=example_context_set[:, 2], y=-example_context_set[:, 3], marker='*', s=150., label='Example')
+    sns.scatterplot(x=all_context_sets[:, 2], y=all_context_sets[:, 3], s=10., label='Selected scenes')
+    sns.scatterplot(x=example_context_set[:, 2], y=example_context_set[:, 3], marker='*', s=150., label='Example')
 
     plt.legend()
     # plt.title('distribution of velocities in context-sets')
